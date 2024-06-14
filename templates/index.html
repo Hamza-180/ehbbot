@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EHB Bot</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #0056b3;
+        }
+
+        main {
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        form label {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        form input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        form input[type="submit"] {
+            padding: 10px;
+            font-size: 1em;
+            background-color: #0056b3;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        form input[type="submit"]:hover {
+            background-color: #003d80;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .answer-box {
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            min-height: 50px;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Welkom bij de EHB Bot</h1>
+        </header>
+        <main>
+            <form id="askForm">
+                <label for="query">Stel een vraag:</label>
+                <input type="text" id="query" name="query" placeholder="Typ hier uw vraag...">
+                <input type="submit" value="Vraag">
+            </form>
+            <h2>Antwoord:</h2>
+            <div id="answer" class="answer-box"></div>
+        </main>
+        <footer>
+            <p>&copy; 2024 Erasmushogeschool Brussel. Alle rechten voorbehouden.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('askForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const query = document.getElementById('query').value;
+            const answerBox = document.getElementById('answer');
+            answerBox.innerText = 'Bezig met laden...';  // Show loading message
+
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                answerBox.innerText = result.answer || 'Geen antwoord gevonden.';
+            } catch (error) {
+                answerBox.innerText = `Fout bij het ophalen van het antwoord: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
